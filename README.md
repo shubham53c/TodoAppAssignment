@@ -1,6 +1,6 @@
 # todoapp
 
-A new Flutter project.
+ToDo app assignment given by elRed.
 
 ## Getting Started
 
