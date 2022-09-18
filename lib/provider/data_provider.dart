@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../localization/app_strings.dart';
+import '../localization/app_strings_en.dart';
 
 class DataProvider with ChangeNotifier {
+  AppStrings localization = AppStringsEn();
   final googleSignIn = GoogleSignIn();
 
   GoogleSignInAccount? _user;
