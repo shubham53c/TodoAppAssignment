@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../provider/data_provider.dart';
 import './login_screen.dart';
 
 class AfterLogin extends StatelessWidget {
@@ -20,22 +22,42 @@ class AfterLogin extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Logged in as:\n${user.email}",
+              "Logged in as:\n${user.displayName}\n${user.email}",
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 try {
-                  FirebaseAuth.instance.signOut().then((value) {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (ctx) => const LoginScreen(),
-                      ),
-                    );
-                  }).catchError((e) {
-                    print("signoutError: $e");
-                  });
+                  final provider = Provider.of<DataProvider>(
+                    context,
+                    listen: false,
+                  );
+                  if (provider.user != null) {
+                    provider.signOut().then((value) {
+                      FirebaseAuth.instance.signOut().then((value) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (ctx) => const LoginScreen(),
+                          ),
+                        );
+                      }).catchError((e) {
+                        print("signoutError: $e");
+                      });
+                    }).catchError((e) {
+                      print("signoutError: $e");
+                    });
+                  } else {
+                    FirebaseAuth.instance.signOut().then((value) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (ctx) => const LoginScreen(),
+                        ),
+                      );
+                    }).catchError((e) {
+                      print("signoutError: $e");
+                    });
+                  }
                 } catch (e) {
                   print("error: $e");
                 }

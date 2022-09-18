@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todoapp/provider/data_provider.dart';
 import './after_login_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -52,6 +54,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
               },
               child: const Text("Sign In"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                try {
+                  final provider = Provider.of<DataProvider>(
+                    context,
+                    listen: false,
+                  );
+                  provider.googleLogin();
+                } catch (e) {
+                  print("ee: $e");
+                }
+              },
+              child: const Text("Google Sign In"),
             ),
           ],
         ),
