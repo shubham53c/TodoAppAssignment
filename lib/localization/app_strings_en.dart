@@ -18,4 +18,6 @@ class AppStringsEn extends AppStrings {
   String get formValidationErrorMessage => "Please enter valid value";
   @override
   String get orText => "Or";
+  @override
+  String get genericErrorMessage => "Something went wrong";
 }

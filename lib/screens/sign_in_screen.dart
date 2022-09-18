@@ -1,12 +1,15 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/core/app_utils.dart';
 import '../core/app_colors.dart';
 import '../core/asset_strings.dart';
 import '../provider/data_provider.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  final BuildContext ctxForProgressDialog;
+  const SignInScreen({Key? key, required this.ctxForProgressDialog})
+      : super(key: key);
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -17,6 +20,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _passwordFocusNode = FocusNode();
   var _email = "";
   var _password = "";
+  var _obscurePasswordText = true;
   DataProvider? _dataProvider;
 
   @override
@@ -64,6 +68,7 @@ class _SignInScreenState extends State<SignInScreen> {
     Function(String)? onFieldSubmitted,
     required String labelText,
     bool obscureText = false,
+    bool enableSuffixIcon = false,
   }) {
     const accentColor = AppColors.accentColor;
     const errorColor = AppColors.errorColor;
@@ -96,11 +101,23 @@ class _SignInScreenState extends State<SignInScreen> {
       validator: validator,
       decoration: InputDecoration(
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
-        ),
         label: Text(labelText),
+        suffixIcon: IconButton(
+          onPressed: enableSuffixIcon
+              ? () {
+                  _obscurePasswordText = !_obscurePasswordText;
+                  _updateUI();
+                }
+              : null,
+          icon: Icon(
+            Icons.remove_red_eye,
+            color: enableSuffixIcon
+                ? _obscurePasswordText
+                    ? AppColors.accentColor
+                    : AppColors.accentColor1
+                : Colors.transparent,
+          ),
+        ),
         errorBorder: errorInputBorder,
         focusedErrorBorder: errorInputBorder,
         errorStyle: const TextStyle(
@@ -119,117 +136,141 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
+  void _signInWithEmailAndPassword() {
+    if (_loginFormKey.currentState!.validate()) {
+      AppUtils.showProgressBar(widget.ctxForProgressDialog);
+      _dataProvider!
+          .loginWithEmailAndPassword(
+            context: context,
+            userEmail: _email,
+            userPassword: _password,
+          )
+          .then(
+            (_) => Navigator.of(widget.ctxForProgressDialog).pop(),
+          );
+    }
+  }
+
+  void _googleSignIn() {
+    AppUtils.showProgressBar(widget.ctxForProgressDialog);
+    _dataProvider!.googleLogin(context).then(
+          (_) => Navigator.of(widget.ctxForProgressDialog).pop(),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primaryColor,
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: _dataProvider == null
-            ? const SizedBox()
-            : Center(
-                child: Form(
-                  key: _loginFormKey,
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      const Icon(
-                        Icons.account_circle,
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: _dataProvider == null
+          ? const SizedBox()
+          : Center(
+              child: Form(
+                key: _loginFormKey,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    const Icon(
+                      Icons.account_circle,
+                      color: AppColors.accentColor,
+                      size: 70,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      _dataProvider!.localization.welcomeText,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w400,
                         color: AppColors.accentColor,
-                        size: 70,
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        _dataProvider!.localization.welcomeText,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.accentColor,
-                        ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      _dataProvider!.localization.welcomeSubtitleText,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.accentColor,
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        _dataProvider!.localization.welcomeSubtitleText,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.accentColor,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      _textFormField(
-                        textInputAction: TextInputAction.go,
-                        onFieldSubmitted: (_) {
-                          _passwordFocusNode.requestFocus();
-                        },
-                        validator: _emailValidator,
-                        labelText: _dataProvider!.localization.emailHintText,
-                      ),
-                      const SizedBox(height: 20),
-                      _textFormField(
-                        focusNode: _passwordFocusNode,
-                        validator: _passwordValidator,
-                        labelText: _dataProvider!.localization.passwordHintText,
-                        obscureText: true,
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                AppColors.accentColor,
-                              ),
-                              shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                              ),
+                    ),
+                    const SizedBox(height: 30),
+                    _textFormField(
+                      textInputAction: TextInputAction.go,
+                      onFieldSubmitted: (_) {
+                        _passwordFocusNode.requestFocus();
+                      },
+                      validator: _emailValidator,
+                      labelText: _dataProvider!.localization.emailHintText,
+                    ),
+                    const SizedBox(height: 20),
+                    _textFormField(
+                      focusNode: _passwordFocusNode,
+                      validator: _passwordValidator,
+                      labelText: _dataProvider!.localization.passwordHintText,
+                      onFieldSubmitted: (_) => _signInWithEmailAndPassword(),
+                      obscureText: _obscurePasswordText,
+                      enableSuffixIcon: true,
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _signInWithEmailAndPassword,
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                              AppColors.accentColor,
                             ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 50.0),
-                              child: Text(
-                                _dataProvider!.localization.loginText,
-                                style: const TextStyle(
-                                  color: AppColors.primaryColor,
-                                ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          const Expanded(
-                            child: Divider(
-                              color: AppColors.accentColor,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 50.0),
                             child: Text(
-                              _dataProvider!.localization.orText.toUpperCase(),
-                              textAlign: TextAlign.center,
+                              _dataProvider!.localization.loginText,
                               style: const TextStyle(
-                                fontSize: 17,
-                                color: AppColors.accentColor,
+                                color: AppColors.primaryColor,
                               ),
                             ),
                           ),
-                          const Expanded(
-                            child: Divider(
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(
+                            color: AppColors.accentColor,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Text(
+                            _dataProvider!.localization.orText.toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 17,
                               color: AppColors.accentColor,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Container(
+                        ),
+                        const Expanded(
+                          child: Divider(
+                            color: AppColors.accentColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: _googleSignIn,
+                      child: Container(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 10,
                         ),
@@ -268,11 +309,11 @@ class _SignInScreenState extends State<SignInScreen> {
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-      ),
+            ),
     );
   }
 }

@@ -18,13 +18,11 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       FirebaseAuth.instance.authStateChanges().listen((event) {
         if (event != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (ctx) => AfterLogin(),
-            ),
-          );
-        } else {
-          print("errew: something went wrong");
+          // Navigator.of(context).pushReplacement(
+          //   MaterialPageRoute(
+          //     builder: (ctx) => AfterLogin(),
+          //   ),
+          // );
         }
       });
     } catch (e) {
@@ -62,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     context,
                     listen: false,
                   );
-                  provider.googleLogin();
+                  provider.googleLogin(context);
                 } catch (e) {
                   print("ee: $e");
                 }

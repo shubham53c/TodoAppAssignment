@@ -7,4 +7,5 @@ class AppStrings {
   String get googleSignInButtonLabel => "";
   String get formValidationErrorMessage => "";
   String get orText => "";
+  String get genericErrorMessage => "";
 }
