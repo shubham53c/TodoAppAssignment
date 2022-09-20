@@ -35,4 +35,44 @@ class AppUtils {
       ),
     );
   }
+
+  static Future<DateTime?> showDatePickerDialog(BuildContext ctx) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: ctx,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(
+        const Duration(
+          days: 365,
+        ),
+      ),
+      builder: (ctx, child) => Theme(
+        data: ThemeData.light().copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: AppColors.primaryColor,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    return pickedDate;
+  }
+
+  static Future<TimeOfDay?> showTimePickerDialog(BuildContext ctx) async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: ctx,
+      initialTime: TimeOfDay.fromDateTime(
+        DateTime.now(),
+      ),
+      builder: (ctx, child) => Theme(
+        data: ThemeData.light().copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: AppColors.primaryColor,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    return pickedTime;
+  }
 }

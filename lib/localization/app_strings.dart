@@ -13,7 +13,16 @@ class AppStrings {
   String get noTodoAddedText => "";
   String get doneText => "";
   String get addTodoText => "";
+  String get updateTodoText => "";
   String get loggedInAsText => "";
   String get cancelText => "";
   String get logoutText => "";
+  String get selectDateText => "";
+  String get selectTimeText => "";
+  String get nameLabelText => "";
+  String get descriptionLabelText => "";
+  String get invalidDateSelectedErrorText => "";
+  String get invalidTimeSelectedErrorText => "";
+  String get dateNotSelectedErrorText => "";
+  String get allFieldsAreRequiredMessageText => "";
 }

@@ -12,7 +12,7 @@ class LogoutDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var dataProvider = Provider.of<DataProvider>(context);
+    var dataProvider = Provider.of<DataProvider>(context, listen: false);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(

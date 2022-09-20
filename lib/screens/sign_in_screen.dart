@@ -1,7 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todoapp/core/app_utils.dart';
+import '../core/app_utils.dart';
 import '../core/app_colors.dart';
 import '../core/asset_strings.dart';
 import '../provider/data_provider.dart';

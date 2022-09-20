@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/screens/add_update_todo_screen.dart';
 import '../models/todo_data.dart';
 import '../core/app_colors.dart';
 import '../core/app_utils.dart';
@@ -39,16 +40,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
         );
   }
 
-  void _addTodos() {
+  void _addTodos(TodoData todoData) {
     AppUtils.showProgressBar(context);
     _dataProvider!
         .addTodo(
       context: context,
-      todoData: TodoData(
-        taskName: "Dummy test",
-        taskDesc: "This is a dummy todo for testing",
-        taskTime: DateTime.now().toIso8601String(),
-      ),
+      todoData: todoData,
     )
         .then(
       (_) {
@@ -282,20 +279,21 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       IconButton(
-                                        onPressed: () => _updateTodo(
-                                          TodoData(
-                                            docId: _dataProvider!
-                                                .todosList[i].docId,
-                                            taskName: _dataProvider!
-                                                .todosList[i].taskName,
-                                            taskDesc: _dataProvider!
-                                                .todosList[i].taskDesc,
-                                            taskTime: DateTime.now()
-                                                .toIso8601String(),
-                                            isCompleted: _dataProvider!
-                                                .todosList[i].isCompleted,
-                                          ),
-                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (ctx) =>
+                                                  AddUpdateTodoScreen(
+                                                pageTitle: _dataProvider!
+                                                    .localization
+                                                    .updateTodoText,
+                                                submitFunction: _updateTodo,
+                                                todoData:
+                                                    _dataProvider!.todosList[i],
+                                              ),
+                                            ),
+                                          );
+                                        },
                                         icon: const Icon(
                                           Icons.edit,
                                           color: AppColors.accentColor,
@@ -383,7 +381,15 @@ class _TodoListScreenState extends State<TodoListScreen> {
                     elevation: MaterialStateProperty.all(5),
                     shadowColor: MaterialStateProperty.all(Colors.black),
                   ),
-                  onPressed: _addTodos,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => AddUpdateTodoScreen(
+                            pageTitle: _dataProvider!.localization.addTodoText,
+                            submitFunction: _addTodos),
+                      ),
+                    );
+                  },
                   icon: const Icon(
                     Icons.add,
                     color: AppColors.accentColor,
